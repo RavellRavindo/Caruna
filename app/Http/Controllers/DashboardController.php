@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Withdrawal;
+use App\Models\Caregiver;
+use App\Models\Booking;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $userRole = Auth::user()->role;
+
+        if ($userRole === 'admin') {
+            // Mengambil data real-time untuk dasbor Admin
+            $pendingWithdrawals = Withdrawal::where('status', 'pending')->count();
+            
+            // Asumsi kamu punya kolom status aktif di tabel caregivers
+            $activeCaregivers = Caregiver::count(); 
+            
+            // Asumsi kamu punya tabel bookings
+            $completedBookings = Booking::where('status', 'completed')->count(); 
+
+            return view('admin.dashboard', compact('pendingWithdrawals', 'activeCaregivers', 'completedBookings'));
+        } 
+        elseif ($userRole === 'caregiver') {
+            return view('caregivers.dashboard');
+        } 
+        else {
+            return view('client.dashboard');
+        }
+    }
+}
