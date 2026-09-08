@@ -5,35 +5,35 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-gray-50/50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="page-shell min-h-screen bg-gray-50/50">
+        <div class="page-container">
 
             <!-- Pesan Sukses / Error -->
             @if(session('success'))
-                <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center gap-3 shadow-sm">
+                <div class="mb-6 flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                     <span class="font-bold">{{ session('success') }}</span>
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl flex items-center gap-3 shadow-sm">
+                <div class="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
                     <span class="font-bold">{{ session('error') }}</span>
                 </div>
             @endif
 
-            <div class="mb-8 flex justify-between items-end">
+            <div class="mb-6 sm:mb-8">
                 <div>
-                    <h3 class="text-2xl font-black text-gray-900 tracking-tight">Daftar Pengajuan Pencairan</h3>
+                    <h3 class="text-xl font-black tracking-tight text-gray-900 sm:text-2xl">Daftar Pengajuan Pencairan</h3>
                     <p class="text-gray-500 mt-1">Kelola dan proses permintaan penarikan dana dari perawat.</p>
                 </div>
             </div>
 
             <!-- Tabel Data -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:rounded-3xl">
+                <div class="table-scroll">
+                    <table class="min-w-[900px] w-full border-collapse text-left">
                         <thead>
                             <tr class="bg-gray-50/50 border-b border-gray-100">
                                 <th class="px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">Waktu Pengajuan</th>
@@ -128,7 +128,7 @@
                 
                 <!-- Pagination -->
                 @if(method_exists($withdrawals, 'hasPages') && $withdrawals->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                    <div class="border-t border-gray-100 bg-gray-50/50 px-4 py-4 sm:px-6">
                         {{ $withdrawals->links() }}
                     </div>
                 @endif

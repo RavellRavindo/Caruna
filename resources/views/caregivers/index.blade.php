@@ -5,22 +5,22 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-gray-50/50">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="page-shell bg-gray-50/50">
+        <div class="page-container">
             
-            <div class="mb-10 text-center sm:text-left">
-                <h3 class="text-3xl font-black text-gray-900 tracking-tight">Pilih Perawat untuk Pasien Anda</h3>
-                <p class="text-gray-500 mt-2 text-lg">Temukan pendamping profesional yang tepat untuk kenyamanan keluarga Anda.</p>
+            <div class="mb-8 text-center sm:mb-10 sm:text-left">
+                <h3 class="text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Pilih Perawat untuk Pasien Anda</h3>
+                <p class="mt-2 text-base text-gray-500 sm:text-lg">Temukan pendamping profesional yang tepat untuk kenyamanan keluarga Anda.</p>
             </div>
 
             <!-- Grid Katalog: 3 Kolom -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
                 
                 @forelse ($caregivers as $caregiver)
-                    <div class="group bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
-                        <div class="p-7 flex-1">
+                    <div class="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:rounded-3xl">
+                        <div class="flex-1 p-5 sm:p-7">
                             <!-- Header Card -->
-                            <div class="flex items-center gap-5 mb-6">
+                            <div class="mb-6 flex items-center gap-3 sm:gap-5">
                                 <!-- Avatar Tanpa Dot Online -->
                                 <div class="shrink-0">
                                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-2xl shadow-inner transition-transform group-hover:scale-105">
@@ -51,7 +51,7 @@
 
                             <!-- Spesialisasi -->
                             <div class="mb-4">
-                                <span class="bg-indigo-50 text-indigo-700 text-[11px] font-extrabold px-3 py-1.5 rounded-lg border border-indigo-100 uppercase tracking-wide">
+                                <span class="inline-block break-words bg-indigo-50 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-indigo-700 border border-indigo-100 rounded-lg">
                                     {{ $caregiver->specialization }}
                                 </span>
                             </div>
@@ -74,7 +74,7 @@
                         </div>
 
                         <!-- Tombol Aksi -->
-                        <div class="px-7 pb-7">
+                        <div class="px-5 pb-5 sm:px-7 sm:pb-7">
                             <a href="{{ route('caregivers.show', $caregiver->id) }}" 
                                class="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white font-bold py-3.5 rounded-2xl hover:bg-indigo-700 active:scale-95 transition-all shadow-lg shadow-indigo-100">
                                 <span>Lihat Profil</span>

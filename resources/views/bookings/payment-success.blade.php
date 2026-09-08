@@ -5,14 +5,14 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white rounded-2xl shadow-sm p-8 text-center border border-gray-100">
+    <div class="page-shell">
+        <div class="page-container max-w-xl">
+            <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm sm:p-8">
                 <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                     <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
                 </div>
 
-                <h2 class="text-2xl font-black text-gray-900">Memverifikasi pembayaran</h2>
+                <h2 class="text-xl font-black text-gray-900 sm:text-2xl">Memverifikasi pembayaran</h2>
                 <p id="payment-status-message" class="mt-3 text-gray-600" role="status" aria-live="polite">
                     Pembayaran Anda sedang dikonfirmasi. Mohon jangan tutup halaman ini.
                 </p>

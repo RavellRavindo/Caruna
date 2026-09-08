@@ -63,6 +63,7 @@ class BookingController extends Controller
                 'required',
                 Rule::exists('patients', 'id')->where('user_id', Auth::id()),
             ],
+            'service_address' => 'required|string|max:1000',
             'start_date' => 'required|date|after_or_equal:today',
             'total_days' => 'required|integer|min:1',
         ]);
@@ -109,6 +110,7 @@ class BookingController extends Controller
                 'user_id' => Auth::id(),
                 'caregiver_id' => $caregiver->id,
                 'patient_id' => $data['patient_id'],
+                'service_address' => $data['service_address'],
                 'start_date' => $data['start_date'],
                 'total_days' => $data['total_days'],
                 'snapshot_price' => $caregiver->price_per_day,

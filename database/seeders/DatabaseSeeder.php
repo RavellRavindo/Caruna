@@ -17,18 +17,20 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        \App\Models\User::create([
+        User::create([
             'name' => 'Admin Caruna',
             'email' => 'admin@caruna.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
 
-        \App\Models\User::create([
+        User::create([
             'name' => 'Klien Contoh',
             'email' => 'klien@caruna.com',
             'password' => bcrypt('password'),
             'role' => 'client',
+            'phone_number' => '081234567890',
+            'address' => 'Jl. Contoh No. 10, Jakarta',
         ]);
 
         $this->call([

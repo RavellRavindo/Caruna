@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="page-shell">
+        <div class="page-container">
             
             @if(session('success'))
                 <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-sm">
@@ -27,7 +27,7 @@
                         <p class="text-gray-500 mt-2">Saat ini belum ada permintaan layanan dari klien.</p>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 gap-5 sm:gap-6">
                         @foreach($bookings as $booking)
                             @php
                                 $deadline = null;
@@ -47,9 +47,10 @@
                                     'canceled' => 'bg-gray-50 text-gray-700 border-gray-200',
                                 ];
                                 $color = $statusColors[$booking->status] ?? 'bg-gray-50 text-gray-700 border-gray-200';
+                                $contactIsAvailable = in_array($booking->status, ['paid', 'ongoing', 'waiting_confirmation', 'completed'], true);
                             @endphp
 
-                            <div class="border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition bg-white flex flex-col lg:flex-row items-center gap-6 shadow-sm">
+                            <div class="flex flex-col items-start gap-5 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-lg sm:p-6 lg:flex-row lg:items-center lg:gap-6">
                                 
                                 <div class="w-full lg:w-2/5 border-b lg:border-b-0 lg:border-r border-gray-100 pb-4 lg:pb-0 lg:pr-6">
                                     <div class="flex items-center gap-3 mb-3">
@@ -58,7 +59,7 @@
                                         </span>
                                         <span class="text-xs text-gray-400 font-medium">{{ $booking->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <h4 class="text-xl font-extrabold text-gray-900 mb-1">Pasien: {{ $booking->patient->full_name }}</h4>
+                                    <h4 class="mb-1 break-words text-lg font-extrabold text-gray-900 sm:text-xl">Pasien: {{ $booking->patient->full_name }}</h4>
                                     <p class="text-sm text-gray-500 mb-4">Dipesan oleh: <span class="font-bold text-gray-700">{{ $booking->user->name }}</span></p>
                                     
                                     <div class="flex flex-wrap gap-2">
@@ -78,11 +79,35 @@
                                             </span>
                                         </div>
                                     </div>
+
+                                    @if($contactIsAvailable)
+                                        <div class="mt-4 space-y-2 rounded-xl border border-green-100 bg-green-50 p-3 text-sm">
+                                            <p class="text-[10px] font-black uppercase tracking-wider text-green-700">Kontak & Lokasi Layanan</p>
+
+                                            @if($booking->user->whatsapp_url)
+                                                <a href="{{ $booking->user->whatsapp_url }}?text={{ rawurlencode('Halo, saya '.$booking->caregiver->user->name.' terkait booking #'.$booking->id.' di Caruna.') }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 font-bold text-green-700 hover:text-green-800">
+                                                    <i class="fa-brands fa-whatsapp text-base"></i>
+                                                    {{ $booking->user->phone_number }}
+                                                </a>
+                                            @else
+                                                <p class="text-xs font-medium text-gray-500">Nomor WhatsApp klien belum tersedia.</p>
+                                            @endif
+
+                                            <p class="break-words text-xs leading-relaxed text-gray-600">
+                                                <span class="font-bold text-gray-700">Alamat:</span>
+                                                {{ $booking->service_address ?: 'Belum diisi oleh klien.' }}
+                                            </p>
+                                            <p class="break-words text-xs leading-relaxed text-gray-600">
+                                                <span class="font-bold text-gray-700">Kontak darurat:</span>
+                                                {{ $booking->patient->emergency_contact }}
+                                            </p>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="w-full lg:w-1/4 flex flex-col justify-center items-center lg:items-start px-2">
                                     <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Estimasi Pendapatan</p>
-                                    <p class="text-2xl font-black text-green-600">
+                                    <p class="break-words text-xl font-black text-green-600 sm:text-2xl">
                                         Rp {{ number_format($booking->total_amount * 0.90, 0, ',', '.') }}
                                     </p>
                                     <div class="mt-1 flex gap-2 text-[10px] text-gray-400 font-medium">

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
 use App\Models\Caregiver;
 use App\Models\Patient;
 use App\Models\User;
@@ -24,6 +25,7 @@ class BookingOwnershipTest extends TestCase
             'user_id' => $client->id,
             'caregiver_id' => $caregiver->id,
             'patient_id' => $patient->id,
+            'service_address' => 'Jl. Pengujian No. 1, Jakarta',
             'status' => 'pending',
         ]);
     }
@@ -69,11 +71,58 @@ class BookingOwnershipTest extends TestCase
         $this->assertDatabaseCount('bookings', 0);
     }
 
+    public function test_contact_details_are_hidden_until_booking_is_paid(): void
+    {
+        [$client, $caregiver] = $this->createClientAndCaregiver();
+        $patient = $this->createPatient($client);
+        $booking = Booking::create([
+            'user_id' => $client->id,
+            'caregiver_id' => $caregiver->id,
+            'patient_id' => $patient->id,
+            'service_address' => 'Jl. Pengujian No. 1, Jakarta',
+            'start_date' => now()->addDay()->toDateString(),
+            'total_days' => 1,
+            'snapshot_price' => $caregiver->price_per_day,
+            'total_amount' => $caregiver->price_per_day,
+            'status' => 'approved',
+        ]);
+
+        $this->actingAs($client)
+            ->get(route('bookings.index'))
+            ->assertOk()
+            ->assertDontSee($caregiver->user->whatsapp_url, false);
+
+        $this->actingAs($caregiver->user)
+            ->get(route('caregiver.bookings'))
+            ->assertOk()
+            ->assertDontSee($booking->service_address)
+            ->assertDontSee($client->phone_number);
+
+        $booking->update(['status' => 'paid']);
+
+        $this->actingAs($client)
+            ->get(route('bookings.index'))
+            ->assertOk()
+            ->assertSee($caregiver->user->whatsapp_url, false);
+
+        $this->actingAs($caregiver->user)
+            ->get(route('caregiver.bookings'))
+            ->assertOk()
+            ->assertSee($booking->service_address)
+            ->assertSee($client->phone_number);
+    }
+
     /** @return array{User, Caregiver} */
     private function createClientAndCaregiver(bool $isVerified = true, bool $isAvailable = true): array
     {
-        $client = User::factory()->create(['role' => 'client']);
-        $caregiverUser = User::factory()->create(['role' => 'caregiver']);
+        $client = User::factory()->create([
+            'role' => 'client',
+            'phone_number' => '081000000001',
+        ]);
+        $caregiverUser = User::factory()->create([
+            'role' => 'caregiver',
+            'phone_number' => '081000000002',
+        ]);
         $caregiver = Caregiver::create([
             'user_id' => $caregiverUser->id,
             'specialization' => 'Perawatan lansia',
@@ -104,6 +153,7 @@ class BookingOwnershipTest extends TestCase
         return [
             'caregiver_id' => $caregiver->id,
             'patient_id' => $patient->id,
+            'service_address' => 'Jl. Pengujian No. 1, Jakarta',
             'start_date' => now()->addDay()->toDateString(),
             'total_days' => 1,
         ];

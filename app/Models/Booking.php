@@ -14,6 +14,7 @@ class Booking extends Model
         'user_id',
         'caregiver_id',
         'patient_id',
+        'service_address',
         'start_date',
         'total_days',
         'snapshot_price',

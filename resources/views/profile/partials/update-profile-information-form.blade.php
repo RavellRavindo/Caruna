@@ -47,8 +47,21 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        <div>
+            <x-input-label for="phone_number" :value="__('Nomor WhatsApp')" />
+            <x-text-input id="phone_number" name="phone_number" type="tel" class="mt-1 block w-full" :value="old('phone_number', $user->phone_number)" autocomplete="tel" placeholder="Contoh: 081234567890" />
+            <p class="mt-1 text-xs text-gray-500">Nomor ini hanya dibuka kepada pasangan booking setelah pembayaran berhasil.</p>
+            <x-input-error class="mt-2" :messages="$errors->get('phone_number')" />
+        </div>
+
+        <div>
+            <x-input-label for="address" :value="__('Alamat Domisili')" />
+            <textarea id="address" name="address" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" autocomplete="street-address" placeholder="Alamat ini dapat digunakan sebagai isian awal alamat layanan saat membuat booking.">{{ old('address', $user->address) }}</textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('address')" />
+        </div>
+
+        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <x-primary-button class="w-full justify-center sm:w-auto">{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
                 <p

@@ -10,14 +10,14 @@
 
     <!-- NAVBAR (Sticky & Glassmorphism) -->
     <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between sm:h-20">
                 <!-- Logo -->
                 <div class="flex items-center gap-2">
                     <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-200">
                         C
                     </div>
-                    <span class="text-2xl font-black text-gray-900 tracking-tight">CARUNA<span class="text-indigo-600">.</span></span>
+                    <span class="text-xl font-black tracking-tight text-gray-900 sm:text-2xl">CARUNA<span class="text-indigo-600">.</span></span>
                 </div>
 
                 <!-- Navigation Links -->
@@ -28,14 +28,14 @@
                 </div>
 
                 <!-- Auth Buttons -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 sm:space-x-4">
                     @if (Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}" class="text-sm font-bold text-gray-700 hover:text-indigo-600 transition">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="text-sm font-bold text-gray-600 hover:text-gray-900 transition hidden sm:block">Masuk</a>
-                            <a href="{{ route('register') }}" class="bg-indigo-600 text-white text-sm px-5 py-2.5 rounded-xl font-bold shadow-md shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">
-                                Daftar Sekarang
+                            <a href="{{ route('register') }}" class="rounded-xl bg-indigo-600 px-3 py-2 text-xs font-bold text-white shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5 hover:bg-indigo-700 sm:px-5 sm:py-2.5 sm:text-sm">
+                                <span class="sm:hidden">Daftar</span><span class="hidden sm:inline">Daftar Sekarang</span>
                             </a>
                         @endauth
                     @endif
@@ -45,17 +45,17 @@
     </nav>
 
     <!-- HERO SECTION -->
-    <section id="beranda" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <section id="beranda" class="relative overflow-hidden pb-16 pt-24 sm:pb-20 sm:pt-32 lg:pb-32 lg:pt-48">
         <!-- Background Ornaments -->
         <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-indigo-50 blur-3xl opacity-70 pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-50 blur-3xl opacity-70 pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
+        <div class="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             <span class="inline-block py-1 px-3 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-extrabold uppercase tracking-widest mb-6">
                 Platform Caregiver #1
             </span>
             
-            <h1 class="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 mb-6 tracking-tight leading-tight">
+            <h1 class="mb-6 text-4xl font-black leading-tight tracking-tight text-gray-900 sm:text-5xl md:text-6xl lg:text-7xl">
                 Hadirkan <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500">Belas Kasih</span><br class="hidden sm:block"> di Rumah Anda.
             </h1>
             
@@ -96,8 +96,8 @@
     </section>
 
     <!-- FEATURES SECTION -->
-    <section id="layanan" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="layanan" class="bg-white py-16 sm:py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">Mengapa Memilih Caruna?</h2>
                 <p class="text-gray-500 text-lg">Kami merancang ekosistem yang melindungi hak pasien sekaligus menghargai profesionalisme perawat.</p>
@@ -135,8 +135,8 @@
     </section>
 
     <!-- HOW IT WORKS -->
-    <section id="cara-kerja" class="py-24 bg-gray-900 text-white">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="cara-kerja" class="bg-gray-900 py-16 text-white sm:py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-black mb-4">Sangat Mudah Digunakan</h2>
                 <p class="text-gray-400 text-lg">Hanya 3 langkah mudah untuk mendapatkan perawatan berkualitas.</p>
@@ -166,8 +166,8 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-gray-100 py-12">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+    <footer class="border-t border-gray-100 bg-white py-10 sm:py-12">
+        <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 text-center sm:px-6 md:flex-row md:text-left lg:px-8">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-sm">C</div>
                 <span class="text-xl font-black text-gray-900">CARUNA.</span>

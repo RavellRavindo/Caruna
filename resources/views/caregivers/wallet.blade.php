@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-12 bg-gray-50/50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="page-shell min-h-screen bg-gray-50/50">
+        <div class="page-container">
             
             @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-xl shadow-sm flex items-center gap-3">
+                <div class="mb-6 flex items-start gap-3 rounded-xl border-l-4 border-green-500 bg-green-100 p-4 text-green-700 shadow-sm">
                     <i class="fa-solid fa-circle-check text-xl"></i>
                     <div>
                         <p class="font-bold">Berhasil</p>
@@ -13,7 +13,7 @@
             @endif
 
             @if(session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-xl shadow-sm flex items-center gap-3">
+                <div class="mb-6 flex items-start gap-3 rounded-xl border-l-4 border-red-500 bg-red-100 p-4 text-red-700 shadow-sm">
                     <i class="fa-solid fa-circle-exclamation text-xl"></i>
                     <div>
                         <p class="font-bold">Gagal</p>
@@ -22,20 +22,20 @@
                 </div>
             @endif
 
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 shadow-xl text-white mb-8 flex flex-col md:flex-row justify-between items-center gap-6 border border-indigo-500 relative overflow-hidden">
+            <div class="relative mb-6 flex flex-col gap-6 overflow-hidden rounded-2xl border border-indigo-500 bg-gradient-to-r from-indigo-600 to-purple-600 p-5 text-white shadow-xl sm:mb-8 sm:rounded-3xl sm:p-8 md:flex-row md:items-center md:justify-between">
                 <div class="absolute top-0 right-0 opacity-10 pointer-events-none">
                     <svg class="w-64 h-64 -mt-10 -mr-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0l12 12-12 12L0 12z"/></svg>
                 </div>
 
-                <div class="flex items-center gap-5 relative z-10">
+                <div class="relative z-10 flex items-center gap-3 sm:gap-5">
                     <div class="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-white">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
                         </svg>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <p class="text-indigo-100 text-sm font-medium mb-1 tracking-wide">Total Saldo Pendapatan</p>
-                        <h3 class="text-4xl font-black tracking-tight">
+                        <h3 class="break-words text-3xl font-black tracking-tight sm:text-4xl">
                             Rp {{ number_format(Auth::user()->caregiver->balance ?? 0, 0, ',', '.') }}
                         </h3>
                     </div>
@@ -51,8 +51,8 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-6 md:p-8 border-b border-gray-100 flex justify-between items-center">
+            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm sm:rounded-3xl">
+                <div class="flex flex-col gap-3 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 md:p-8">
                     <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-500">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -62,8 +62,8 @@
                     <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Semua Transaksi</span>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                <div class="table-scroll">
+                    <table class="min-w-[620px] w-full border-collapse text-left">
                         <tbody class="divide-y divide-gray-100">
                             @forelse($mutations as $mutation)
                                 <tr class="hover:bg-gray-50/50 transition-colors">
@@ -113,7 +113,7 @@
                 </div>
 
                 @if(method_exists($mutations, 'hasPages') && $mutations->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+                    <div class="border-t border-gray-100 bg-gray-50/50 px-4 py-4 sm:px-6">
                         {{ $mutations->links() }}
                     </div>
                 @endif
@@ -122,8 +122,8 @@
         </div>
     </div>
 
-    <div id="withdrawModal" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center transition-all">
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 m-4">
+    <div id="withdrawModal" class="fixed inset-0 z-50 hidden flex h-full w-full items-end justify-center overflow-y-auto bg-gray-900/60 backdrop-blur-sm transition-all sm:items-center">
+        <div class="relative m-0 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:m-4 sm:rounded-3xl sm:p-8">
             
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-gray-900">Form Penarikan Dana</h3>

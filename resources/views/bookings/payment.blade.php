@@ -1,11 +1,11 @@
 <x-app-layout>
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 text-center">
-            <div class="bg-white rounded-2xl shadow-sm p-8">
-                <h2 class="text-2xl font-bold mb-4">Selesaikan Pembayaran Anda</h2>
+    <div class="page-shell">
+        <div class="page-container max-w-3xl text-center">
+            <div class="rounded-2xl bg-white p-5 shadow-sm sm:p-8">
+                <h2 class="mb-4 text-xl font-bold sm:text-2xl">Selesaikan Pembayaran Anda</h2>
                 <p class="text-gray-600 mb-6">Total tagihan untuk perawatan pasien <b>{{ $booking->patient->full_name }}</b> adalah:</p>
                 
-                <h3 class="text-4xl font-black text-green-600 mb-8">Rp {{ number_format($booking->total_amount, 0, ',', '.') }}</h3>
+                <h3 class="mb-8 break-words text-3xl font-black text-green-600 sm:text-4xl">Rp {{ number_format($booking->total_amount, 0, ',', '.') }}</h3>
 
                 <button id="pay-button" class="bg-indigo-600 text-white font-bold px-8 py-4 rounded-xl hover:bg-indigo-700 transition w-full md:w-auto shadow-lg">
                     <i class="fa-solid fa-credit-card mr-2"></i> Pilih Metode Pembayaran

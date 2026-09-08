@@ -5,13 +5,13 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl">
-                <div class="p-8 text-gray-900 flex flex-col md:flex-row gap-10">
+    <div class="page-shell">
+        <div class="page-container">
+            <div class="overflow-hidden rounded-2xl bg-white shadow-sm">
+                <div class="flex flex-col gap-8 p-5 text-gray-900 sm:p-8 md:flex-row md:gap-10">
                     
                     <div class="w-full md:w-2/3">
-                        <h3 class="text-2xl font-extrabold text-gray-900 mb-6">Detail Pemesanan</h3>
+                        <h3 class="mb-6 text-xl font-extrabold text-gray-900 sm:text-2xl">Detail Pemesanan</h3>
 
                         @if(isset($busyBookings) && $busyBookings->isNotEmpty())
                             <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-xl shadow-sm">
@@ -59,6 +59,13 @@
                                 <x-text-input id="total_days" class="block mt-2 w-full rounded-lg" type="number" name="total_days" required min="1" placeholder="Contoh: 3" oninput="calculateTotal()" />
                             </div>
 
+                            <div class="mb-6">
+                                <x-input-label for="service_address" :value="__('Alamat Layanan')" class="text-lg font-bold" />
+                                <textarea id="service_address" name="service_address" rows="4" required class="mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Masukkan alamat lengkap tempat caregiver memberikan layanan.">{{ old('service_address', Auth::user()->address) }}</textarea>
+                                <p class="mt-2 text-xs text-gray-500">Alamat ini hanya akan terlihat oleh caregiver setelah pembayaran booking berhasil.</p>
+                                <x-input-error :messages="$errors->get('service_address')" class="mt-2" />
+                            </div>
+
                             <button type="submit" class="mt-8 w-full bg-indigo-600 text-white font-extrabold text-lg py-4 rounded-xl shadow-lg hover:bg-indigo-700 hover:shadow-xl transition duration-300">
                                 Konfirmasi & Buat Pesanan
                             </button>
@@ -68,30 +75,30 @@
                     <div class="w-full md:w-1/3 bg-gray-50 p-6 rounded-2xl border border-gray-200 h-fit">
                         <h4 class="text-xl font-extrabold text-gray-900 mb-6">Ringkasan Layanan</h4>
                         
-                        <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200">
+                        <div class="mb-6 flex items-center gap-3 border-b border-gray-200 pb-6 sm:gap-4">
                             <div class="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-2xl shadow-inner">
                                 {{ substr($caregiver->user->name, 0, 1) }}
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="font-bold text-gray-900 text-lg">{{ $caregiver->user->name }}</p>
                                 <p class="text-sm text-indigo-600 font-semibold">{{ $caregiver->specialization }}</p>
                             </div>
                         </div>
 
                         <div class="space-y-3 mb-6">
-                            <div class="flex justify-between text-gray-600">
+                            <div class="flex flex-col gap-1 text-gray-600 sm:flex-row sm:justify-between">
                                 <span>Tarif per Hari</span>
                                 <span class="font-semibold" id="price_per_day" data-price="{{ $caregiver->price_per_day }}">
                                     Rp {{ number_format($caregiver->price_per_day, 0, ',', '.') }}
                                 </span>
                             </div>
-                            <div class="flex justify-between text-gray-600">
+                            <div class="flex flex-col gap-1 text-gray-600 sm:flex-row sm:justify-between">
                                 <span>Durasi Layanan</span>
                                 <span class="font-semibold"><span id="display_days">0</span> Hari</span>
                             </div>
                         </div>
 
-                        <div class="pt-6 border-t border-gray-200 flex justify-between items-center">
+                        <div class="flex flex-col gap-2 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between">
                             <span class="font-bold text-gray-900 text-lg">Total Pembayaran</span>
                             <span class="text-2xl font-black text-green-600" id="total_price">Rp 0</span>
                         </div>

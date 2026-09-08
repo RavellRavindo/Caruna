@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
             <a href="{{ route('caregivers.index') }}" class="text-gray-500 hover:text-indigo-600 transition">
                 <i class="fa-solid fa-arrow-left"></i> Kembali ke Katalog
             </a>
@@ -10,26 +10,26 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="page-shell">
+        <div class="page-container">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-8">
                 
                 <!-- KOLOM KIRI (Detail & Ulasan) -->
-                <div class="md:col-span-2 space-y-8">
+                <div class="space-y-5 md:col-span-2 md:space-y-8">
                     
                     <!-- Kartu Info Utama -->
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col sm:flex-row gap-6 items-start">
+                    <div class="flex flex-col items-start gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:flex-row sm:gap-6 sm:rounded-3xl sm:p-8">
                         <!-- Avatar -->
                         <div class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-black text-3xl shrink-0">
                             {{ substr($caregiver->user->name, 0, 2) }}
                         </div>
                         
                         <!-- Detail Nama & Spesialisasi -->
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h1 class="text-3xl font-black text-gray-900">{{ $caregiver->user->name }}</h1>
-                                    <span class="inline-block mt-2 px-3 py-1 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-lg">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:gap-4">
+                                <div class="min-w-0">
+                                    <h1 class="break-words text-2xl font-black text-gray-900 sm:text-3xl">{{ $caregiver->user->name }}</h1>
+                                    <span class="mt-2 inline-block break-words rounded-lg bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-700">
                                         {{ $caregiver->specialization }}
                                     </span>
                                 </div>
@@ -50,7 +50,7 @@
                     </div>
 
                     <!-- Kartu Tentang Perawat -->
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:rounded-3xl sm:p-8">
                         <h3 class="text-xl font-bold text-gray-900 mb-4 border-b pb-2">Tentang Perawat</h3>
                         <p class="text-gray-600 leading-relaxed">
                             {{ $caregiver->about_me ?? 'Perawat ini belum menuliskan deskripsi tentang dirinya.' }}
@@ -58,15 +58,15 @@
                     </div>
 
                     <!-- DAFTAR ULASAN KLIEN -->
-                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:rounded-3xl sm:p-8">
                         <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                             <i class="fa-solid fa-comments text-indigo-500"></i> Apa Kata Klien?
                         </h3>
 
                         <div class="grid grid-cols-1 gap-4">
                             @forelse($caregiver->reviews as $review)
-                                <div class="bg-gray-50 border border-gray-100 p-5 rounded-2xl">
-                                    <div class="flex justify-between items-start mb-3">
+                                <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4 sm:p-5">
+                                    <div class="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                         <div class="flex items-center gap-3">
                                             <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-xs">
                                                 {{ substr($review->user->name, 0, 1) }}
@@ -99,7 +99,7 @@
 
                 <!-- KOLOM KANAN (Aksi Pemesanan) -->
                 <div class="md:col-span-1">
-                    <div class="bg-white p-6 rounded-3xl shadow-lg border border-indigo-100 sticky top-6">
+                    <div class="rounded-2xl border border-indigo-100 bg-white p-5 shadow-lg md:sticky md:top-6 md:rounded-3xl md:p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">Informasi Pemesanan</h3>
                         
                         <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
@@ -109,7 +109,7 @@
 
                         <div class="mb-6">
                             <span class="block text-gray-500 text-sm mb-1">Tarif per Hari</span>
-                            <span class="text-3xl font-black text-green-600">Rp {{ number_format($caregiver->price_per_day, 0, ',', '.') }}</span>
+                            <span class="text-2xl font-black text-green-600 sm:text-3xl">Rp {{ number_format($caregiver->price_per_day, 0, ',', '.') }}</span>
                         </div>
 
                         <!-- TOMBOL MENUJU FORM BOOKING -->

@@ -5,17 +5,17 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="page-shell">
+        <div class="page-container">
             
             @if(session('success'))
-                <div class="bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-xl mb-6 flex items-center shadow-sm">
-                    <i class="fa-solid fa-circle-check text-green-500 mr-3 text-xl"></i>
+                <div class="mb-6 flex items-start rounded-xl border border-green-200 bg-green-50 px-4 py-4 text-green-800 shadow-sm sm:items-center sm:px-5">
+                    <i class="fa-solid fa-circle-check mr-3 mt-0.5 text-xl text-green-500 sm:mt-0"></i>
                     <span class="font-semibold">{{ session('success') }}</span>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl p-6 border border-gray-100">
+            <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
                 
                 @if($bookings->isEmpty())
                     <div class="text-center py-16 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
@@ -25,8 +25,8 @@
                         <a href="{{ route('caregivers.index') }}" class="inline-block bg-indigo-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-indigo-700 transition">Cari Caregiver Sekarang</a>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-separate border-spacing-y-2">
+                    <div class="table-scroll">
+                        <table class="min-w-[820px] w-full text-left border-separate border-spacing-y-2">
                             <thead>
                                 <tr class="text-gray-400 text-xs uppercase tracking-widest">
                                     <th class="pb-4 px-2 font-black">Caregiver</th>
@@ -116,7 +116,7 @@
 
                                                     {{-- Modal Review --}}
                                                     <div id="reviewModal-{{ $booking->id }}" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center text-left">
-                                                        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 m-4">
+                                                        <div class="relative m-3 w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl sm:m-4 sm:rounded-3xl sm:p-8">
                                                             <div class="flex justify-between items-center mb-6">
                                                                 <h3 class="text-xl font-black text-gray-900">Nilai Perawat</h3>
                                                                 <button type="button" onclick="document.getElementById('reviewModal-{{ $booking->id }}').classList.add('hidden')" class="text-gray-400 hover:text-red-500 transition">
@@ -145,6 +145,16 @@
                                                             </form>
                                                         </div>
                                                     </div>
+                                                @endif
+
+                                                @if(in_array($booking->status, ['paid', 'ongoing', 'waiting_confirmation', 'completed'], true))
+                                                    @if($booking->caregiver->user->whatsapp_url)
+                                                        <a href="{{ $booking->caregiver->user->whatsapp_url }}?text={{ rawurlencode('Halo, saya '.$booking->user->name.' terkait booking #'.$booking->id.' di Caruna.') }}" target="_blank" rel="noopener noreferrer" class="flex w-full items-center justify-center gap-1 rounded-lg bg-green-500 px-3 py-2 text-[10px] font-black uppercase text-white shadow-md shadow-green-100 transition-all hover:bg-green-600">
+                                                            <i class="fa-brands fa-whatsapp text-sm"></i> Hubungi via WhatsApp
+                                                        </a>
+                                                    @else
+                                                        <p class="text-center text-[10px] font-medium text-gray-400">Nomor WhatsApp caregiver belum tersedia.</p>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </td>

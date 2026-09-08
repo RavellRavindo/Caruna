@@ -1,7 +1,7 @@
 <x-guest-layout>
     <!-- Header Branding CARUNA -->
-    <div class="text-center mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-900">Buat Akun Baru</h2>
+    <div class="mb-6 text-center sm:mb-8">
+        <h2 class="text-2xl font-extrabold text-gray-900 sm:text-3xl">Buat Akun Baru</h2>
         <p class="text-gray-600 mt-2">Bergabunglah dengan komunitas <span class="text-indigo-600 font-bold">CARUNA</span></p>
     </div>
 
@@ -52,12 +52,12 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex items-center justify-between mt-8">
+        <div class="mt-8 flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
             <a class="underline text-sm text-gray-600 hover:text-indigo-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors" href="{{ route('login') }}">
                 {{ __('Sudah punya akun? Masuk') }}
             </a>
 
-            <button type="submit" class="inline-flex items-center px-6 py-3 bg-indigo-600 border border-transparent rounded-lg font-bold text-white hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-md">
+            <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-6 py-3 font-bold text-white shadow-md transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900 sm:w-auto">
                 {{ __('DAFTAR') }}
             </button>
         </div>

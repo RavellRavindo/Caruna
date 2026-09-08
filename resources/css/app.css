@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+
+    body {
+        @apply min-w-0 overflow-x-hidden;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
+@layer components {
+    .page-shell {
+        @apply py-8 sm:py-12;
+    }
+
+    .page-container {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .table-scroll {
+        @apply -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0;
+    }
+}

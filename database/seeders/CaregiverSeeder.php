@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Caregiver;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class CaregiverSeeder extends Seeder
@@ -17,14 +17,15 @@ class CaregiverSeeder extends Seeder
             'email' => 'siti@caruna.com',
             'password' => Hash::make('password123'),
             'role' => 'caregiver',
+            'phone_number' => '081234567891',
         ]);
 
         Caregiver::create([
             'user_id' => $user1->id,
             'specialization' => 'Perawatan Lansia & Demensia',
-            'price_per_day' => 250000.00, 
+            'price_per_day' => 250000.00,
             'is_available' => true,
-            'is_verified' => true, 
+            'is_verified' => true,
             'experience_years' => 5,
             'gender' => 'Perempuan',
             'about_me' => 'Saya perawat tersertifikasi yang sabar dan berpengalaman mendampingi lansia.',
@@ -37,6 +38,7 @@ class CaregiverSeeder extends Seeder
             'email' => 'ahmad@caruna.com',
             'password' => Hash::make('password123'),
             'role' => 'caregiver',
+            'phone_number' => '081234567892',
         ]);
 
         Caregiver::create([
