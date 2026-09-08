@@ -44,8 +44,33 @@ class BookingOwnershipTest extends TestCase
         $this->assertDatabaseCount('bookings', 0);
     }
 
+    public function test_client_cannot_open_a_booking_form_for_an_unavailable_caregiver(): void
+    {
+        [$client, $caregiver] = $this->createClientAndCaregiver(isAvailable: false);
+        $this->createPatient($client);
+
+        $this->actingAs($client)
+            ->get(route('bookings.create', $caregiver))
+            ->assertRedirect(route('caregivers.index'))
+            ->assertSessionHas('error');
+    }
+
+    public function test_client_cannot_submit_a_booking_for_an_unverified_caregiver(): void
+    {
+        [$client, $caregiver] = $this->createClientAndCaregiver(isVerified: false);
+        $patient = $this->createPatient($client);
+
+        $this->actingAs($client)
+            ->from(route('caregivers.index'))
+            ->post(route('bookings.store'), $this->bookingPayload($caregiver, $patient))
+            ->assertRedirect(route('caregivers.index'))
+            ->assertSessionHasErrors('caregiver_id');
+
+        $this->assertDatabaseCount('bookings', 0);
+    }
+
     /** @return array{User, Caregiver} */
-    private function createClientAndCaregiver(): array
+    private function createClientAndCaregiver(bool $isVerified = true, bool $isAvailable = true): array
     {
         $client = User::factory()->create(['role' => 'client']);
         $caregiverUser = User::factory()->create(['role' => 'caregiver']);
@@ -54,6 +79,8 @@ class BookingOwnershipTest extends TestCase
             'specialization' => 'Perawatan lansia',
             'price_per_day' => 150000,
             'gender' => 'Perempuan',
+            'is_verified' => $isVerified,
+            'is_available' => $isAvailable,
         ]);
 
         return [$client, $caregiver];

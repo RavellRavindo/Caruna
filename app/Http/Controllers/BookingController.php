@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -23,6 +24,13 @@ class BookingController extends Controller
     public function create(string $caregiver_id)
     {
         $caregiver = Caregiver::with('user')->findOrFail($caregiver_id);
+
+        if (! $caregiver->is_verified || ! $caregiver->is_available) {
+            return redirect()
+                ->route('caregivers.index')
+                ->with('error', 'Caregiver ini sedang tidak tersedia untuk dipesan.');
+        }
+
         $patients = Patient::where('user_id', Auth::id())->get();
 
         if ($patients->isEmpty()) {
@@ -42,8 +50,15 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'caregiver_id' => 'required|exists:caregivers,id',
+        $data = $request->validate([
+            'caregiver_id' => [
+                'required',
+                Rule::exists('caregivers', 'id')->where(
+                    fn ($query) => $query
+                        ->where('is_verified', true)
+                        ->where('is_available', true),
+                ),
+            ],
             'patient_id' => [
                 'required',
                 Rule::exists('patients', 'id')->where('user_id', Auth::id()),
@@ -52,38 +67,55 @@ class BookingController extends Controller
             'total_days' => 'required|integer|min:1',
         ]);
 
-        // CEK JADWAL BENTROK
-        $newStartDate = Carbon::parse($request->start_date);
-        // Tambahkan (int) agar teks "3" berubah jadi angka 3
-        $newEndDate = $newStartDate->copy()->addDays((int) $request->total_days - 1);
+        DB::transaction(function () use ($data) {
+            // Mengunci caregiver menyerialkan booking pada caregiver yang sama dan
+            // memastikan statusnya tidak berubah saat request diproses.
+            $caregiver = Caregiver::query()
+                ->whereKey($data['caregiver_id'])
+                ->where('is_verified', true)
+                ->where('is_available', true)
+                ->lockForUpdate()
+                ->first();
 
-        $activeBookings = Booking::where('caregiver_id', $request->caregiver_id)
-            ->whereIn('status', ['pending', 'approved', 'paid', 'ongoing', 'waiting_confirmation'])
-            ->get();
-
-        foreach ($activeBookings as $b) {
-            $existingStart = Carbon::parse($b->start_date);
-            // Tambahkan (int) di sini juga untuk berjaga-jaga
-            $existingEnd = $existingStart->copy()->addDays((int) $b->total_days);
-
-            if ($newStartDate->lessThan($existingEnd) && $newEndDate->greaterThan($existingStart)) {
-                return back()->with('error', 'Maaf, perawat ini sudah dipesan pada tanggal tersebut. Silakan pilih tanggal lain.');
+            if (! $caregiver) {
+                throw ValidationException::withMessages([
+                    'caregiver_id' => 'Caregiver ini sedang tidak tersedia untuk dipesan.',
+                ]);
             }
-        }
 
-        $caregiver = Caregiver::findOrFail($request->caregiver_id);
-        $totalAmount = $caregiver->price_per_day * $request->total_days;
+            $newStartDate = Carbon::parse($data['start_date']);
+            $newEndDate = $newStartDate->copy()->addDays((int) $data['total_days'] - 1);
 
-        Booking::create([
-            'user_id' => Auth::id(),
-            'caregiver_id' => $request->caregiver_id,
-            'patient_id' => $request->patient_id,
-            'start_date' => $request->start_date,
-            'total_days' => $request->total_days,
-            'snapshot_price' => $caregiver->price_per_day,
-            'total_amount' => $totalAmount,
-            'status' => 'pending',
-        ]);
+            $activeBookings = Booking::query()
+                ->where('caregiver_id', $caregiver->id)
+                ->whereIn('status', ['pending', 'approved', 'paid', 'ongoing', 'waiting_confirmation'])
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($activeBookings as $activeBooking) {
+                $existingStart = Carbon::parse($activeBooking->start_date);
+                $existingEnd = $existingStart->copy()->addDays((int) $activeBooking->total_days);
+
+                if ($newStartDate->lessThan($existingEnd) && $newEndDate->greaterThan($existingStart)) {
+                    throw ValidationException::withMessages([
+                        'start_date' => 'Maaf, perawat ini sudah dipesan pada tanggal tersebut. Silakan pilih tanggal lain.',
+                    ]);
+                }
+            }
+
+            $totalAmount = $caregiver->price_per_day * $data['total_days'];
+
+            Booking::create([
+                'user_id' => Auth::id(),
+                'caregiver_id' => $caregiver->id,
+                'patient_id' => $data['patient_id'],
+                'start_date' => $data['start_date'],
+                'total_days' => $data['total_days'],
+                'snapshot_price' => $caregiver->price_per_day,
+                'total_amount' => $totalAmount,
+                'status' => 'pending',
+            ]);
+        });
 
         return redirect()->route('bookings.index')->with('success', 'Pesanan berhasil dibuat! Menunggu konfirmasi dari caregiver.');
     }
