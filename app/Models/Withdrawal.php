@@ -15,6 +15,7 @@ class Withdrawal extends Model
         'bank_name',
         'account_number',
         'account_name',
+        'idempotency_key',
         'status',
     ];
 

@@ -132,12 +132,13 @@
                 </button>
             </div>
 
-            <form action="{{ route('withdrawals.store') }}" method="POST">
+            <form action="{{ route('withdrawals.store') }}" method="POST" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
                 @csrf
+                <input type="hidden" name="idempotency_key" value="{{ $withdrawalIdempotencyKey }}">
                 
                 <div class="mb-5">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Nominal Penarikan (Rp)</label>
-                    <input type="number" name="amount" min="50000" max="{{ Auth::user()->caregiver->balance ?? 0 }}" required class="w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold" placeholder="Contoh: 150000">
+                    <input type="number" name="amount" min="50000" step="1" max="{{ Auth::user()->caregiver->balance ?? 0 }}" required class="w-full border-gray-300 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-bold" placeholder="Contoh: 150000">
                     <p class="text-xs text-indigo-600 mt-2 font-semibold">Saldo Maksimal: Rp {{ number_format(Auth::user()->caregiver->balance ?? 0, 0, ',', '.') }}</p>
                 </div>
 

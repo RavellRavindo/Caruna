@@ -280,13 +280,21 @@ class BookingController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($booking) {
-                $commission = $booking->total_amount * 0.10;
-                $netAmount = $booking->total_amount - $commission;
+            $completed = DB::transaction(function () use ($booking) {
+                $lockedBooking = Booking::query()
+                    ->lockForUpdate()
+                    ->findOrFail($booking->id);
 
-                $booking->update(['status' => 'completed']);
+                if ($lockedBooking->status !== 'waiting_confirmation') {
+                    return false;
+                }
 
-                $caregiver = Caregiver::where('id', $booking->caregiver_id)->lockForUpdate()->firstOrFail();
+                $commission = round((float) $lockedBooking->total_amount * 0.10, 2);
+                $netAmount = round((float) $lockedBooking->total_amount - $commission, 2);
+
+                $lockedBooking->update(['status' => 'completed']);
+
+                $caregiver = Caregiver::where('id', $lockedBooking->caregiver_id)->lockForUpdate()->firstOrFail();
                 $caregiver->balance += $netAmount;
                 $caregiver->save();
 
@@ -294,14 +302,25 @@ class BookingController extends Controller
                     'user_id' => $caregiver->user_id,
                     'type' => 'credit',
                     'amount' => $netAmount,
-                    'description' => 'Pendapatan layanan pesanan #'.$booking->id,
-                    'reference_id' => $booking->id,
+                    'description' => 'Pendapatan layanan pesanan #'.$lockedBooking->id,
+                    'reference_id' => $lockedBooking->id,
                 ]);
+
+                return true;
             });
 
+            if (! $completed) {
+                return back()->with('error', 'Status pesanan tidak valid.');
+            }
+
             return redirect()->route('bookings.index')->with('success', 'Layanan selesai! Saldo telah diteruskan ke perawat.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan sistem: '.$e->getMessage());
+        } catch (\Throwable $exception) {
+            Log::error('Booking completion could not be processed.', [
+                'booking_id' => $booking->id,
+                'exception' => $exception,
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan sistem saat menyelesaikan layanan.');
         }
     }
 }
