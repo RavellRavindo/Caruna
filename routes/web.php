@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\CaregiverController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\WithdrawalController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminWithdrawalController;
-use App\Http\Controllers\CaregiverWalletController; 
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CaregiverController;
+use App\Http\Controllers\CaregiverWalletController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PaymentCallbackController;
-use Illuminate\Support\Facades\Schedule;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WithdrawalController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schedule;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,7 +23,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 Schedule::command('app:cancel-expired-bookings')->hourly();
 
-// 1. RUTE WEBHOOK (Wajib di luar Auth agar Midtrans bisa masuk)
 Route::post('/midtrans-callback', [PaymentCallbackController::class, 'receive']);
 
 Route::middleware('auth')->group(function () {
@@ -31,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // Katalog Perawat (Bisa dilihat siapa saja)
     Route::get('/caregivers', [CaregiverController::class, 'index'])->name('caregivers.index');
     Route::get('/caregivers/{caregiver}', [CaregiverController::class, 'show'])->name('caregivers.show');
@@ -41,13 +40,14 @@ Route::middleware('auth')->group(function () {
     // ==========================================
     Route::middleware(['role:client'])->group(function () {
         Route::resource('patients', PatientController::class);
-        
+
         // Proses Booking & Ulasan
         Route::get('/booking/create/{caregiver_id}', [BookingController::class, 'create'])->name('bookings.create');
         Route::post('/booking/store', [BookingController::class, 'store'])->name('bookings.store');
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
         Route::get('/bookings/{id}/payment', [BookingController::class, 'payment'])->name('bookings.payment');
         Route::get('/bookings/{id}/payment-success', [BookingController::class, 'paymentSuccess'])->name('bookings.payment.success');
+        Route::get('/bookings/{id}/payment-status', [BookingController::class, 'paymentStatus'])->name('bookings.payment.status');
         Route::patch('/bookings/{id}/confirm-finish', [BookingController::class, 'confirmFinish'])->name('bookings.confirm_finish');
         Route::post('/bookings/{booking}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     });
@@ -61,9 +61,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('/bookings/{id}/update-status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
         Route::patch('/bookings/{id}/start', [BookingController::class, 'startService'])->name('bookings.start');
         Route::patch('/bookings/{id}/request-finish', [BookingController::class, 'requestFinish'])->name('bookings.request_finish');
-        
+
         // Kelola Keuangan
-        Route::get('/wallet', [CaregiverWalletController::class, 'index'])->name('caregiver.wallet'); 
+        Route::get('/wallet', [CaregiverWalletController::class, 'index'])->name('caregiver.wallet');
         Route::post('/withdraw', [WithdrawalController::class, 'store'])->name('withdrawals.store');
     });
 
