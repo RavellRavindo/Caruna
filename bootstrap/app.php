@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'verified-caregiver' => \App\Http\Middleware\EnsureVerifiedCaregiver::class,
         ]);
         
         // Bebaskan rute midtrans dari verifikasi CSRF

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminWithdrawalController;
+use App\Http\Controllers\AdminCaregiverController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaregiverController;
+use App\Http\Controllers\CaregiverProfileController;
 use App\Http\Controllers\CaregiverWalletController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PatientController;
@@ -30,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/caregiver-rate', [CaregiverProfileController::class, 'updateRate'])
+        ->middleware('role:caregiver')
+        ->name('profile.caregiver-rate.update');
 
     // Katalog Perawat (Bisa dilihat siapa saja)
     Route::get('/caregivers', [CaregiverController::class, 'index'])->name('caregivers.index');
@@ -55,7 +60,7 @@ Route::middleware('auth')->group(function () {
     // ==============================================
     // 3. RUANGAN KHUSUS PERAWAT (Dijaga role:caregiver)
     // ==============================================
-    Route::middleware(['role:caregiver'])->prefix('caregiver')->group(function () {
+    Route::middleware(['role:caregiver', 'verified-caregiver'])->prefix('caregiver')->group(function () {
         // Kelola Pesanan Masuk
         Route::get('/incoming-bookings', [BookingController::class, 'incomingBookings'])->name('caregiver.bookings');
         Route::patch('/bookings/{id}/update-status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
@@ -71,6 +76,9 @@ Route::middleware('auth')->group(function () {
     // 4. RUANGAN KHUSUS ADMIN (Dijaga role:admin)
     // ==========================================
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+        Route::get('/caregivers', [AdminCaregiverController::class, 'index'])->name('admin.caregivers.index');
+        Route::patch('/caregivers/{caregiver}/verification', [AdminCaregiverController::class, 'updateVerification'])
+            ->name('admin.caregivers.verification.update');
         Route::get('/withdrawals', [AdminWithdrawalController::class, 'index'])->name('admin.withdrawals.index');
         Route::post('/withdrawals/{id}/approve', [AdminWithdrawalController::class, 'approve'])->name('admin.withdrawals.approve');
         Route::post('/withdrawals/{id}/reject', [AdminWithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');

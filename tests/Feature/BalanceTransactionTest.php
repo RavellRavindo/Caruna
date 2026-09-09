@@ -150,6 +150,8 @@ class BalanceTransactionTest extends TestCase
             'price_per_day' => 100000,
             'gender' => 'Perempuan',
             'balance' => $balance,
+            'is_verified' => true,
+            'is_available' => true,
         ]);
 
         return [$admin, $caregiverUser, $caregiver];

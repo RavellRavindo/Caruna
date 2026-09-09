@@ -25,7 +25,7 @@ class BookingController extends Controller
     {
         $caregiver = Caregiver::with('user')->findOrFail($caregiver_id);
 
-        if (! $caregiver->is_verified || ! $caregiver->is_available) {
+        if (! $caregiver->isVerified() || ! $caregiver->is_available) {
             return redirect()
                 ->route('caregivers.index')
                 ->with('error', 'Caregiver ini sedang tidak tersedia untuk dipesan.');
@@ -55,7 +55,7 @@ class BookingController extends Controller
                 'required',
                 Rule::exists('caregivers', 'id')->where(
                     fn ($query) => $query
-                        ->where('is_verified', true)
+                        ->where('verification_status', Caregiver::VERIFICATION_VERIFIED)
                         ->where('is_available', true),
                 ),
             ],
@@ -73,7 +73,7 @@ class BookingController extends Controller
             // memastikan statusnya tidak berubah saat request diproses.
             $caregiver = Caregiver::query()
                 ->whereKey($data['caregiver_id'])
-                ->where('is_verified', true)
+                ->where('verification_status', Caregiver::VERIFICATION_VERIFIED)
                 ->where('is_available', true)
                 ->lockForUpdate()
                 ->first();

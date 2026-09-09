@@ -24,7 +24,9 @@ class DashboardController extends Controller
             return view('admin.dashboard', compact('pendingWithdrawals', 'activeCaregivers', 'completedBookings'));
         } 
         elseif ($userRole === 'caregiver') {
-            return view('caregivers.dashboard');
+            return view('caregivers.dashboard', [
+                'caregiver' => Auth::user()->caregiver,
+            ]);
         } 
         else {
             return view('client.dashboard');

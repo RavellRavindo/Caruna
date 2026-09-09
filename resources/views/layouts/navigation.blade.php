@@ -18,6 +18,9 @@
 
                     <!-- Menu Khusus Admin -->
                     @if(Auth::check() && Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('admin.caregivers.index')" :active="request()->routeIs('admin.caregivers.*')">
+                            {{ __('Verifikasi Caregiver') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.withdrawals.index')" :active="request()->routeIs('admin.withdrawals.*')">
                             {{ __('Manajemen Dana') }}
                         </x-nav-link>
@@ -25,12 +28,14 @@
 
                     <!-- Tambahan: Menu Khusus Caregiver (Opsional, untuk melengkapi) -->
                     @if(Auth::check() && Auth::user()->role === 'caregiver')
-                        <x-nav-link :href="route('caregiver.bookings')" :active="request()->routeIs('caregiver.bookings')">
-                            {{ __('Pesanan Masuk') }}
-                        </x-nav-link>
-                         <x-nav-link :href="route('caregiver.wallet')" :active="request()->routeIs('caregiver.wallet')">
-                            {{ __('Dompet Saya') }}
-                        </x-nav-link>
+                        @if(Auth::user()->caregiver?->isVerified())
+                            <x-nav-link :href="route('caregiver.bookings')" :active="request()->routeIs('caregiver.bookings')">
+                                {{ __('Pesanan Masuk') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('caregiver.wallet')" :active="request()->routeIs('caregiver.wallet')">
+                                {{ __('Dompet Saya') }}
+                            </x-nav-link>
+                        @endif
                     @endif
 
                     @if(Auth::check() && Auth::user()->role === 'client')
@@ -102,6 +107,9 @@
 
             <!-- Menu Khusus Admin (Mobile) -->
             @if(Auth::check() && Auth::user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.caregivers.index')" :active="request()->routeIs('admin.caregivers.*')">
+                    {{ __('Verifikasi Caregiver') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.withdrawals.index')" :active="request()->routeIs('admin.withdrawals.*')">
                     {{ __('Manajemen Dana') }}
                 </x-responsive-nav-link>
@@ -109,12 +117,14 @@
 
             <!-- Tambahan: Menu Khusus Caregiver (Mobile) -->
             @if(Auth::check() && Auth::user()->role === 'caregiver')
-                <x-responsive-nav-link :href="route('caregiver.bookings')" :active="request()->routeIs('caregiver.bookings')">
-                    {{ __('Pesanan Masuk') }}
-                </x-responsive-nav-link>
-                 <x-responsive-nav-link :href="route('caregiver.wallet')" :active="request()->routeIs('caregiver.wallet')">
-                    {{ __('Dompet Saya') }}
-                </x-responsive-nav-link>
+                @if(Auth::user()->caregiver?->isVerified())
+                    <x-responsive-nav-link :href="route('caregiver.bookings')" :active="request()->routeIs('caregiver.bookings')">
+                        {{ __('Pesanan Masuk') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('caregiver.wallet')" :active="request()->routeIs('caregiver.wallet')">
+                        {{ __('Dompet Saya') }}
+                    </x-responsive-nav-link>
+                @endif
             @endif
 
             @if(Auth::check() && Auth::user()->role === 'client')

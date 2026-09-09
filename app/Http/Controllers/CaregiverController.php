@@ -12,7 +12,7 @@ class CaregiverController extends Controller
             ->with('user')
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
-            ->where('is_verified', true)
+            ->verified()
             ->where('is_available', true)
             ->get();
 
@@ -21,6 +21,8 @@ class CaregiverController extends Controller
 
     public function show(Caregiver $caregiver)
     {
+        abort_unless($caregiver->isVerified() && $caregiver->is_available, 404);
+
         $caregiver->load([
             'user',
             'reviews' => fn ($query) => $query->latest(),

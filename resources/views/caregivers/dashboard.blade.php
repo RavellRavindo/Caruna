@@ -7,6 +7,11 @@
 
     <div class="page-shell">
         <div class="page-container">
+            @if (session('error'))
+                <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                    {{ session('error') }}
+                </div>
+            @endif
             
             <!-- Welcome Banner -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8 border-l-4 border-indigo-600">
@@ -24,6 +29,40 @@
                 </div>
             </div>
 
+            @if (! $caregiver)
+                <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-red-800 shadow-sm sm:rounded-3xl sm:p-7">
+                    <h3 class="text-lg font-bold">Profil caregiver belum tersedia</h3>
+                    <p class="mt-2 text-sm leading-relaxed">Akun ini belum memiliki data profesional caregiver. Hubungi administrator agar profil dapat dilengkapi sebelum menerima pesanan.</p>
+                </div>
+            @elseif (! $caregiver->isVerified())
+                @php
+                    $isRejected = $caregiver->verification_status === \App\Models\Caregiver::VERIFICATION_REJECTED;
+                @endphp
+                <div class="rounded-2xl border {{ $isRejected ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50' }} p-5 shadow-sm sm:rounded-3xl sm:p-7">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+                        <div class="{{ $isRejected ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700' }} flex h-12 w-12 shrink-0 items-center justify-center rounded-xl font-black">
+                            !
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900">
+                                {{ $isRejected ? 'Pendaftaran caregiver belum disetujui' : 'Pendaftaran caregiver sedang ditinjau' }}
+                            </h3>
+                            <p class="mt-2 text-sm leading-relaxed text-gray-700">
+                                @if ($isRejected)
+                                    Admin belum dapat menyetujui pendaftaran Anda. Perbaiki data yang diminta lalu hubungi administrator untuk pengajuan ulang.
+                                @else
+                                    Data profesional Anda sudah tersimpan dan sedang menunggu verifikasi admin. Selama proses ini, pesanan masuk dan dompet belum dapat diakses.
+                                @endif
+                            </p>
+                            @if ($isRejected && $caregiver->rejection_reason)
+                                <p class="mt-3 rounded-lg bg-white/70 px-3 py-2 text-sm text-red-800">
+                                    <span class="font-bold">Catatan admin:</span> {{ $caregiver->rejection_reason }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @else
             <!-- Konten Khusus Caregiver -->
             <a href="{{ route('caregiver.wallet') }}" class="block group mb-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-indigo-300 transition-all">
@@ -67,7 +106,7 @@
                     </div>
                 </div>
             </div>
-
+            @endif
         </div>
     </div>
 </x-app-layout>

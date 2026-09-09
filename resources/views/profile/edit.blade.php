@@ -56,6 +56,14 @@
                         </div>
                     </div>
 
+                    @if ($user->role === 'caregiver' && $user->caregiver)
+                        <div class="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
+                            <div class="max-w-2xl">
+                                @include('profile.partials.update-caregiver-rate-form')
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-8">
                         <div class="max-w-2xl">
                             @include('profile.partials.update-password-form')
