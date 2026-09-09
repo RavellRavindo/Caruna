@@ -93,6 +93,20 @@
                         return;
                     }
 
+                    if (status.reconciliation_status === 'refund_required') {
+                        stopPolling();
+                        message.textContent = 'Pembayaran diterima setelah batas booking berakhir.';
+                        detail.textContent = 'Booking tetap dibatalkan dan refund sedang diproses oleh admin.';
+                        return;
+                    }
+
+                    if (status.reconciliation_status === 'refunded') {
+                        stopPolling();
+                        message.textContent = 'Refund pembayaran telah dicatat.';
+                        detail.textContent = 'Booking tetap dibatalkan. Silakan lihat riwayat pesanan untuk detailnya.';
+                        return;
+                    }
+
                     if (status.payment_status === 'failed') {
                         stopPolling();
                         message.textContent = 'Pembayaran tidak berhasil dikonfirmasi.';

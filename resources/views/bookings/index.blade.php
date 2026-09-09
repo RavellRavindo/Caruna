@@ -60,6 +60,7 @@
                                             'canceled' => 'bg-gray-50 text-gray-700 border-gray-200',
                                         ];
                                         $color = $statusColors[$booking->status] ?? 'bg-gray-50 text-gray-700';
+                                        $latestPayment = $booking->payments->first();
 
                                         // 2. Logika Hitung Mundur (Deadline)
                                         $deadline = null;
@@ -88,6 +89,16 @@
                                                 <span class="{{ $color }} border text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider shadow-sm">
                                                     {{ str_replace('_', ' ', $booking->status) }}
                                                 </span>
+
+                                                @if($latestPayment?->requiresRefund())
+                                                    <p class="w-full rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-center text-[10px] font-bold leading-relaxed text-amber-800">
+                                                        Pembayaran diterima setelah booking dibatalkan. Refund sedang diproses admin.
+                                                    </p>
+                                                @elseif($latestPayment?->reconciliation_status === \App\Models\Payment::RECONCILIATION_REFUNDED)
+                                                    <p class="w-full rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-center text-[10px] font-bold leading-relaxed text-green-800">
+                                                        Refund pembayaran telah dicatat.
+                                                    </p>
+                                                @endif
 
                                                 {{-- Tampilan Hitung Mundur (Deadline) --}}
                                                 @if($deadline && now()->lessThan($deadline))

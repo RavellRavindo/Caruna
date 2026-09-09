@@ -124,7 +124,12 @@ class BookingController extends Controller
 
     public function index()
     {
-        $bookings = Booking::with(['caregiver.user', 'patient', 'review'])
+        $bookings = Booking::with([
+            'caregiver.user',
+            'patient',
+            'review',
+            'payments' => fn ($query) => $query->latest('id'),
+        ])
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
@@ -163,7 +168,7 @@ class BookingController extends Controller
 
     public function payment(string $id)
     {
-        [$booking, $payment] = DB::transaction(function () use ($id) {
+        [$booking, $payment, $expired] = DB::transaction(function () use ($id) {
             $booking = Booking::with('patient')->lockForUpdate()->findOrFail($id);
 
             if ($booking->user_id !== Auth::id()) {
@@ -172,6 +177,12 @@ class BookingController extends Controller
 
             if ($booking->status !== 'approved') {
                 abort(422, 'Pesanan belum disetujui atau sudah tidak dapat dibayar.');
+            }
+
+            if ($booking->updated_at->lte(now()->subHours(12))) {
+                $booking->update(['status' => 'canceled']);
+
+                return [$booking, null, true];
             }
 
             $payment = Payment::query()
@@ -191,8 +202,14 @@ class BookingController extends Controller
                 ]);
             }
 
-            return [$booking, $payment];
+            return [$booking, $payment, false];
         });
+
+        if ($expired) {
+            return redirect()
+                ->route('bookings.index')
+                ->with('error', 'Batas waktu pembayaran telah berakhir. Booking dibatalkan dan tidak dapat dibayar.');
+        }
 
         if (! config('services.midtrans.server_key') || ! config('services.midtrans.client_key')) {
             Log::error('Midtrans keys have not been configured.');
@@ -254,13 +271,14 @@ class BookingController extends Controller
 
         $payment = $booking->payments()
             ->latest('id')
-            ->first(['id', 'status', 'midtrans_status']);
+            ->first(['id', 'status', 'midtrans_status', 'reconciliation_status']);
 
         return response()
             ->json([
                 'booking_status' => $booking->status,
                 'payment_status' => $payment?->status,
                 'midtrans_status' => $payment?->midtrans_status,
+                'reconciliation_status' => $payment?->reconciliation_status,
                 'payment_confirmed' => in_array(
                     $booking->status,
                     ['paid', 'ongoing', 'waiting_confirmation', 'completed'],

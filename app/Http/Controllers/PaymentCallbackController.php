@@ -99,20 +99,53 @@ class PaymentCallbackController extends Controller
                         && ($payload['fraud_status'] ?? 'accept') === 'accept'));
 
             if ($isSuccessful) {
-                $payment->update($callbackAttributes + [
+                $successAttributes = $callbackAttributes + [
                     'status' => 'success',
                     'payment_date' => $payment->payment_date ?? now(),
-                ]);
+                ];
 
                 if ($booking->status === 'approved') {
+                    $payment->update($successAttributes);
                     $booking->update(['status' => 'paid']);
+                } elseif ($booking->status === 'canceled') {
+                    if ($payment->reconciliation_status !== Payment::RECONCILIATION_REFUNDED) {
+                        $successAttributes += [
+                            'reconciliation_status' => Payment::RECONCILIATION_REFUND_REQUIRED,
+                            'reconciliation_note' => 'Pembayaran sukses diterima setelah booking dibatalkan. Refund harus diproses.',
+                            'refund_reference' => null,
+                            'reconciled_at' => null,
+                        ];
+                    }
+
+                    $payment->update($successAttributes);
+
+                    Log::warning('Successful Midtrans callback requires a refund because booking is canceled.', [
+                        'booking_id' => $booking->id,
+                        'payment_id' => $payment->id,
+                    ]);
                 } elseif ($booking->status !== 'paid') {
+                    $payment->update($successAttributes);
+
                     Log::warning('Successful Midtrans callback ignored because booking is no longer payable.', [
                         'booking_id' => $booking->id,
                         'booking_status' => $booking->status,
                         'payment_id' => $payment->id,
                     ]);
+                } else {
+                    $payment->update($successAttributes);
                 }
+            } elseif ($payload['transaction_status'] === 'refund') {
+                $payment->update($callbackAttributes + [
+                    'reconciliation_status' => Payment::RECONCILIATION_REFUNDED,
+                    'reconciliation_note' => 'Refund dikonfirmasi oleh Midtrans.',
+                    'reconciled_at' => now(),
+                ]);
+            } elseif ($payload['transaction_status'] === 'partial_refund') {
+                $payment->update($callbackAttributes + [
+                    'reconciliation_status' => Payment::RECONCILIATION_REFUND_REQUIRED,
+                    'reconciliation_note' => 'Midtrans melaporkan refund sebagian. Admin perlu memeriksa sisa refund.',
+                    'reconciled_at' => null,
+                ]);
             } elseif (in_array($payload['transaction_status'], ['deny', 'cancel', 'expire', 'failure'], true)) {
                 if ($payment->status !== 'success') {
                     $payment->update($callbackAttributes + ['status' => 'failed']);

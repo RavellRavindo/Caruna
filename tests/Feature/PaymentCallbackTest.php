@@ -74,6 +74,36 @@ class PaymentCallbackTest extends TestCase
         $this->assertDatabaseHas('payments', ['id' => $payment->id, 'status' => 'success']);
     }
 
+    public function test_late_settlement_for_a_canceled_booking_requires_a_refund(): void
+    {
+        [$booking, $payment] = $this->createBookingAndPayment('canceled');
+
+        $this->postJson('/midtrans-callback', $this->callbackPayload($payment))->assertOk();
+
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'canceled']);
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'status' => 'success',
+            'reconciliation_status' => Payment::RECONCILIATION_REFUND_REQUIRED,
+        ]);
+    }
+
+    public function test_refund_callback_marks_payment_reconciliation_as_refunded(): void
+    {
+        [$booking, $payment] = $this->createBookingAndPayment('canceled');
+
+        $this->postJson('/midtrans-callback', $this->callbackPayload($payment))->assertOk();
+        $this->postJson('/midtrans-callback', $this->callbackPayload($payment, [
+            'transaction_status' => 'refund',
+        ]))->assertOk();
+
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'canceled']);
+        $this->assertDatabaseHas('payments', [
+            'id' => $payment->id,
+            'reconciliation_status' => Payment::RECONCILIATION_REFUNDED,
+        ]);
+    }
+
     public function test_pending_callback_does_not_change_booking_to_pending(): void
     {
         [$booking, $payment] = $this->createBookingAndPayment();

@@ -68,6 +68,49 @@ class PaymentStatusTest extends TestCase
             ->assertSessionHas('success', 'Pembayaran telah dikonfirmasi.');
     }
 
+    public function test_booking_owner_can_see_when_a_late_payment_requires_a_refund(): void
+    {
+        [$client, $booking] = $this->createBooking('canceled');
+        Payment::create([
+            'booking_id' => $booking->id,
+            'amount' => 150000,
+            'payment_method' => 'midtrans',
+            'status' => 'success',
+            'midtrans_status' => 'settlement',
+            'reconciliation_status' => Payment::RECONCILIATION_REFUND_REQUIRED,
+            'order_id' => 'CARUNA-'.$booking->id.'-status-test-refund',
+        ]);
+
+        $this->actingAs($client)
+            ->getJson(route('bookings.payment.status', $booking))
+            ->assertOk()
+            ->assertJson([
+                'booking_status' => 'canceled',
+                'payment_status' => 'success',
+                'reconciliation_status' => Payment::RECONCILIATION_REFUND_REQUIRED,
+                'payment_confirmed' => false,
+            ]);
+    }
+
+    public function test_expired_approved_booking_cannot_open_a_new_payment(): void
+    {
+        [$client, $booking] = $this->createBooking();
+        Booking::whereKey($booking->id)->update([
+            'updated_at' => now()->subHours(13),
+        ]);
+
+        $this->actingAs($client)
+            ->get(route('bookings.payment', $booking))
+            ->assertRedirect(route('bookings.index'))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'canceled',
+        ]);
+        $this->assertDatabaseCount('payments', 0);
+    }
+
     /** @return array{User, Booking} */
     private function createBooking(string $status = 'approved'): array
     {

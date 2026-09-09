@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminWithdrawalController;
 use App\Http\Controllers\AdminCaregiverController;
+use App\Http\Controllers\AdminPaymentReconciliationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CaregiverController;
 use App\Http\Controllers\CaregiverProfileController;
@@ -79,6 +80,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/caregivers', [AdminCaregiverController::class, 'index'])->name('admin.caregivers.index');
         Route::patch('/caregivers/{caregiver}/verification', [AdminCaregiverController::class, 'updateVerification'])
             ->name('admin.caregivers.verification.update');
+        Route::get('/payment-reconciliation', [AdminPaymentReconciliationController::class, 'index'])
+            ->name('admin.payments.reconciliation.index');
+        Route::patch('/payment-reconciliation/{payment}/refunded', [AdminPaymentReconciliationController::class, 'markRefunded'])
+            ->name('admin.payments.reconciliation.refunded');
         Route::get('/withdrawals', [AdminWithdrawalController::class, 'index'])->name('admin.withdrawals.index');
         Route::post('/withdrawals/{id}/approve', [AdminWithdrawalController::class, 'approve'])->name('admin.withdrawals.approve');
         Route::post('/withdrawals/{id}/reject', [AdminWithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');

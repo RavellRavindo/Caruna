@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
+    public const RECONCILIATION_NOT_REQUIRED = 'not_required';
+
+    public const RECONCILIATION_REFUND_REQUIRED = 'refund_required';
+
+    public const RECONCILIATION_REFUNDED = 'refunded';
+
     protected $fillable = [
         'booking_id',
         'amount',
@@ -19,6 +25,10 @@ class Payment extends Model
         'midtrans_status',
         'fraud_status',
         'last_callback_at',
+        'reconciliation_status',
+        'reconciliation_note',
+        'refund_reference',
+        'reconciled_at',
     ];
 
     protected function casts(): array
@@ -26,7 +36,13 @@ class Payment extends Model
         return [
             'payment_date' => 'datetime',
             'last_callback_at' => 'datetime',
+            'reconciled_at' => 'datetime',
         ];
+    }
+
+    public function requiresRefund(): bool
+    {
+        return $this->reconciliation_status === self::RECONCILIATION_REFUND_REQUIRED;
     }
 
     public function booking(): BelongsTo

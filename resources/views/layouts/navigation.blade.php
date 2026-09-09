@@ -21,6 +21,9 @@
                         <x-nav-link :href="route('admin.caregivers.index')" :active="request()->routeIs('admin.caregivers.*')">
                             {{ __('Verifikasi Caregiver') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.payments.reconciliation.index')" :active="request()->routeIs('admin.payments.reconciliation.*')">
+                            {{ __('Refund Pembayaran') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.withdrawals.index')" :active="request()->routeIs('admin.withdrawals.*')">
                             {{ __('Manajemen Dana') }}
                         </x-nav-link>
@@ -109,6 +112,9 @@
             @if(Auth::check() && Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.caregivers.index')" :active="request()->routeIs('admin.caregivers.*')">
                     {{ __('Verifikasi Caregiver') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.payments.reconciliation.index')" :active="request()->routeIs('admin.payments.reconciliation.*')">
+                    {{ __('Refund Pembayaran') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.withdrawals.index')" :active="request()->routeIs('admin.withdrawals.*')">
                     {{ __('Manajemen Dana') }}
