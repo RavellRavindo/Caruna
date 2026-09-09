@@ -43,8 +43,8 @@
                             <!-- KOMPONEN BINTANG -->
                             <div class="flex items-center gap-2 mt-4 bg-yellow-50 inline-flex px-3 py-1.5 rounded-lg border border-yellow-100">
                                 <i class="fa-solid fa-star text-yellow-400"></i>
-                                <span class="font-extrabold text-gray-900 text-lg">{{ number_format($caregiver->average_rating, 1) }}</span>
-                                <span class="text-gray-500 text-sm font-medium">({{ $caregiver->total_reviews }} Ulasan)</span>
+                                <span class="font-extrabold text-gray-900 text-lg">{{ number_format((float) ($caregiver->reviews_avg_rating ?? 0), 1) }}</span>
+                                <span class="text-gray-500 text-sm font-medium">({{ $caregiver->reviews_count }} Ulasan)</span>
                             </div>
                         </div>
                     </div>

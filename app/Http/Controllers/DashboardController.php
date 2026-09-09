@@ -15,13 +15,10 @@ class DashboardController extends Controller
         $userRole = Auth::user()->role;
 
         if ($userRole === 'admin') {
-            // Mengambil data real-time untuk dasbor Admin
             $pendingWithdrawals = Withdrawal::where('status', 'pending')->count();
             
-            // Asumsi kamu punya kolom status aktif di tabel caregivers
             $activeCaregivers = Caregiver::count(); 
             
-            // Asumsi kamu punya tabel bookings
             $completedBookings = Booking::where('status', 'completed')->count(); 
 
             return view('admin.dashboard', compact('pendingWithdrawals', 'activeCaregivers', 'completedBookings'));

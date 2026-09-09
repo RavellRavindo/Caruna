@@ -15,6 +15,13 @@
                 </div>
             @endif
 
+            @if(session('error') || $errors->any())
+                <div class="mb-6 flex items-start rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-red-800 shadow-sm sm:items-center sm:px-5">
+                    <i class="fa-solid fa-circle-exclamation mr-3 mt-0.5 text-xl text-red-500 sm:mt-0"></i>
+                    <span class="font-semibold">{{ session('error') ?? 'Ulasan belum dapat dikirim. Periksa kembali isian Anda.' }}</span>
+                </div>
+            @endif
+
             <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
                 
                 @if($bookings->isEmpty())
@@ -115,15 +122,15 @@
                                                     </button>
 
                                                     {{-- Modal Review --}}
-                                                    <div id="reviewModal-{{ $booking->id }}" class="fixed inset-0 z-50 hidden bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex justify-center items-center text-left">
-                                                        <div class="relative m-3 w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl sm:m-4 sm:rounded-3xl sm:p-8">
+                                                    <div id="reviewModal-{{ $booking->id }}" class="fixed inset-0 z-50 hidden flex h-full w-full items-end justify-center overflow-y-auto bg-gray-900/60 backdrop-blur-sm text-left sm:items-center">
+                                                        <div class="relative m-0 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:m-4 sm:rounded-3xl sm:p-8">
                                                             <div class="flex justify-between items-center mb-6">
                                                                 <h3 class="text-xl font-black text-gray-900">Nilai Perawat</h3>
                                                                 <button type="button" onclick="document.getElementById('reviewModal-{{ $booking->id }}').classList.add('hidden')" class="text-gray-400 hover:text-red-500 transition">
                                                                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                                                 </button>
                                                             </div>
-                                                            <form action="{{ route('reviews.store', $booking->id) }}" method="POST">
+                                                            <form action="{{ route('reviews.store', $booking->id) }}" method="POST" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
                                                                 @csrf
                                                                 <div class="mb-5">
                                                                     <label class="block text-gray-700 text-xs font-black uppercase mb-2 tracking-widest">Rating Bintang</label>
@@ -134,10 +141,13 @@
                                                                         <option value="2">⭐⭐ (2/5)</option>
                                                                         <option value="1">⭐ (1/5)</option>
                                                                     </select>
+                                                                    <x-input-error :messages="$errors->get('rating')" class="mt-2" />
                                                                 </div>
                                                                 <div class="mb-8">
                                                                     <label class="block text-gray-700 text-xs font-black uppercase mb-2 tracking-widest">Ulasan Anda</label>
-                                                                    <textarea name="comment" rows="4" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ceritakan pengalaman Anda..."></textarea>
+                                                                    <textarea name="comment" rows="4" maxlength="500" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ceritakan pengalaman Anda...">{{ old('comment') }}</textarea>
+                                                                    <p class="mt-2 text-xs text-gray-400">Maksimal 500 karakter. Komentar bersifat opsional.</p>
+                                                                    <x-input-error :messages="$errors->get('comment')" class="mt-2" />
                                                                 </div>
                                                                 <button type="submit" class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-black py-4 px-4 rounded-2xl shadow-lg transition uppercase tracking-widest text-sm">
                                                                     Kirim Ulasan
@@ -145,6 +155,10 @@
                                                             </form>
                                                         </div>
                                                     </div>
+                                                @elseif($booking->status === 'completed' && $booking->review)
+                                                    <span class="flex w-full items-center justify-center gap-1 rounded-lg bg-gray-100 px-3 py-2 text-[10px] font-black uppercase text-gray-500">
+                                                        <i class="fa-solid fa-check"></i> Ulasan terkirim
+                                                    </span>
                                                 @endif
 
                                                 @if(in_array($booking->status, ['paid', 'ongoing', 'waiting_confirmation', 'completed'], true))
